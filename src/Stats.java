@@ -31,7 +31,7 @@ public class Stats {
         }, TIMEOUT, TIMEOUT);
     }
 
-    public Object fetch(String server, int port, String mbean, String attr) throws IOException, MalformedObjectNameException, ReflectionException, InstanceNotFoundException, MBeanException, AttributeNotFoundException {
+    public Object fetch(String server, int port, String mbean, String attr) throws MalformedObjectNameException, ReflectionException, InstanceNotFoundException, MBeanException, AttributeNotFoundException, IOException {
         String service = new StringBuilder("service:jmx:rmi:///jndi/rmi://").append(server).append(':').append(port).append("/jmxrmi").toString();
 
         ConnectorHolder holder = connectors.get(service);
@@ -39,10 +39,17 @@ public class Stats {
             holder = new ConnectorHolder(JMXConnectorFactory.connect(new JMXServiceURL(service)));
             connectors.put(service, holder);
         }
+        holder.lastRead = System.currentTimeMillis();
 
-        MBeanServerConnection connection = holder.conn.getMBeanServerConnection();
-        ObjectName objectName = new ObjectName(mbean);
-        return connection.getAttribute(objectName, attr);
+        MBeanServerConnection connection = null;
+        try {
+            connection = holder.conn.getMBeanServerConnection();
+            ObjectName objectName = new ObjectName(mbean);
+            return connection.getAttribute(objectName, attr);
+        } catch (IOException e) {
+            connectors.remove(service);
+            throw e;
+        }
     }
 
     public void destroy() {
@@ -61,7 +68,6 @@ public class Stats {
 
         public ConnectorHolder(JMXConnector conn) {
             this.conn = conn;
-            this.lastRead = System.currentTimeMillis();
         }
     }
 }
