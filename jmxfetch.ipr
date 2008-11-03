@@ -275,7 +275,7 @@
     </group>
   </component>
   <component name="ProjectDetails">
-    <option name="projectName" value="jfetch" />
+    <option name="projectName" value="jmxfetch" />
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectLibrariesConfigurable.UI">
@@ -292,7 +292,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/jfetch.iml" filepath="$PROJECT_DIR$/jfetch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jmxfetch.iml" filepath="$PROJECT_DIR$/jmxfetch.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
