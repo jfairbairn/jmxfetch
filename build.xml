@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jfetch" default="all">
+  
+  
+  <property file="jfetch.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.sbas/**"/>
+    <exclude name="**/.IJI.*/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.bin"/>
+  </patternset>
+  
+  
+  <!-- Application Server Libraries -->
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module jfetch -->
+  
+  <dirname property="module.jfetch.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.jfetch" value="${compiler.args}"/>
+  
+  <property name="jfetch.output.dir" value="${module.jfetch.basedir}/out/production/jfetch"/>
+  <property name="jfetch.testoutput.dir" value="${module.jfetch.basedir}/out/test/jfetch"/>
+  
+  <path id="jfetch.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="jfetch.module.classpath">
+    <pathelement location="${module.jfetch.basedir}/../../../../Applications/Diana-8995.app/lib/javaee.jar"/>
+  </path>
+  
+  <path id="jfetch.runtime.module.classpath">
+    <pathelement location="${jfetch.output.dir}"/>
+    <pathelement location="${jfetch.testoutput.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.jfetch">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.jfetch">
+    <patternset refid="excluded.from.module.jfetch"/>
+  </patternset>
+  
+  <path id="jfetch.module.sourcepath">
+    <dirset dir="${module.jfetch.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.jfetch" depends="compile.module.jfetch.production,compile.module.jfetch.tests" description="Compile module jfetch"/>
+  
+  <target name="compile.module.jfetch.production" description="Compile module jfetch; production classes">
+    <mkdir dir="${jfetch.output.dir}"/>
+    <javac destdir="${jfetch.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.jfetch}"/>
+      <bootclasspath refid="jfetch.module.bootclasspath"/>
+      <classpath refid="jfetch.module.classpath"/>
+      <src refid="jfetch.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.jfetch"/>
+    </javac>
+    
+    <copy todir="${jfetch.output.dir}">
+      <fileset dir="${module.jfetch.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.jfetch.tests" depends="compile.module.jfetch.production" description="compile module jfetch; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.jfetch" description="cleanup module">
+    <delete dir="${jfetch.output.dir}"/>
+    <delete dir="${jfetch.testoutput.dir}"/>
+  </target>
+  
+  <property name="jfetchweb.dir.exploded" value="${module.jfetch.basedir}/out/exploded/jfetchWeb"/>
+  <property name="jfetchweb.path.jar" value="${module.jfetch.basedir}/out/jfetch.war"/>
+  <target name="j2ee.build.jfetchweb" depends="compile.module.jfetch" description="Build configured Java EE directories and archives for facet &apos;Web&apos;">
+    <antcall target="j2ee.build.exploded.jfetchweb">
+      <param name="j2ee.dir.exploded" value="${jfetchweb.dir.exploded}"/>
+    </antcall>
+    <antcall target="j2ee.build.jar.jfetchweb">
+      <param name="j2ee.path.jar" value="${jfetchweb.path.jar}"/>
+    </antcall>
+  </target>
+  
+  <!-- Call the target to build exploded directory for facet 'Web'.
+       Path to the exploded directory is specified by parameter 'j2ee.dir.exploded' -->
+  <target name="j2ee.build.exploded.jfetchweb" description="Build exploded directory for facet &apos;Web&apos;">
+    <copy file="${module.jfetch.basedir}/web/WEB-INF/web.xml" tofile="${j2ee.dir.exploded}/WEB-INF/web.xml"/>
+    <copy todir="${j2ee.dir.exploded}/WEB-INF/classes">
+      <fileset dir="${module.jfetch.basedir}/out/production/jfetch"/>
+    </copy>
+    <copy todir="${j2ee.dir.exploded}/">
+      <fileset dir="${module.jfetch.basedir}/web"/>
+    </copy>
+  </target>
+  
+  <!-- Call the target to build war archive for facet 'Web'.
+       Path to the archive file is specified by parameter 'j2ee.path.jar' -->
+  <target name="j2ee.build.jar.jfetchweb" description="Build Java EE archive for facet &apos;Web&apos;">
+    <dirname property="jar.dir" file="${j2ee.path.jar}"/>
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${j2ee.path.jar}" duplicate="preserve">
+      <manifest>
+        <attribute name="Created-By" value="IntelliJ IDEA"/>
+        <attribute name="Manifest-Version" value="1.0"/>
+      </manifest>
+      <zipfileset dir="${module.jfetch.basedir}/web" prefix=""/>
+      <zipfileset dir="${module.jfetch.basedir}/out/production/jfetch" prefix="WEB-INF/classes"/>
+      <zipfileset file="${module.jfetch.basedir}/web/WEB-INF/web.xml" prefix="WEB-INF"/>
+    </jar>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.jfetch" description="cleanup all"/>
+  
+  <target name="all" depends="init, clean, j2ee.build.jfetchweb" description="build all"/>
+</project>
