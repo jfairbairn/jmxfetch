@@ -1,0 +1,28 @@
+This tiny webapp makes integrating JMX monitoring into non-Java systems trivial. Simply drop the .war file into your
+favourite Servlet container, and you can read any attribute from any JMX server that allows anonymous* remote reads.
+
+The format for request URLs is
+
+  /<hostname>:<port>/<mbean>/<attrname>
+
+For example, if the webapp is deployed on localhost, with a context path of /bridge, the following url
+
+  http://localhost:8080/bridge/localhost:9003/Catalina:type=ThreadPool,name=http-8080/maxThreads
+
+gets the value of the maxThreads attribute from the Catalina:type=ThreadPool,name=http-8080 bean registered in the JVM
+exposing itself on localhost's port 9003.
+
+jmxfetcher makes some attempt at efficiency and safety; it caches JMX connections for reuse, and closes connections
+older than 10 minutes.
+
+Finally, the idea and implementation are wholly "borrowed" from the Polar Rose JMX-REST bridge[1], written by
+Stefan Arentz. Thanks, Stefan! I just decided that I preferred a plainer style that can be built with Ant rather than
+Maven, and which compiles to a 6kb .war file rather than a 5Mb one. Oh, and I prefer my URL style, even if it is less
+flexible than Stefan's.
+
+--
+James Fairbairn
+
+* I intend to take HTTP Basic authentication credentials and pass them to the JMX connector at some point.
+
+[1] http://code.google.com/p/polarrose-jmx-rest-bridge/
