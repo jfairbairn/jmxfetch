@@ -13,7 +13,7 @@ gets the value of the maxThreads attribute from the Catalina:type=ThreadPool,nam
 exposing itself on localhost's port 9003.
 
 jmxfetcher makes some attempt at efficiency and safety; it caches JMX connections for reuse, and closes connections
-older than 10 minutes.
+that haven't been used for 10 minutes.
 
 Finally, the idea and implementation are wholly "borrowed" from the Polar Rose JMX-REST bridge[1], written by
 Stefan Arentz. Thanks, Stefan! I just decided that I preferred a plainer style that can be built with Ant rather than
